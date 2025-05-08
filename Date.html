@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omar's Special Question for Zoza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .dancing-font {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        .heart {
+            position: absolute;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .photo-frame {
+            border: 15px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: rotate(-5deg);
+            transition: all 0.3s ease;
+        }
+        
+        .photo-frame:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+        
+        .button-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal {
+            transition: all 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .modal.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .form-input:focus {
+            border-bottom-color: #ec4899;
+        }
+        
+        .date-planning-form {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .date-planning-form.show {
+            max-height: 1000px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="relative overflow-hidden">
+    <!-- Background music -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Floating hearts -->
+    <div id="hearts-container"></div>
+    
+    <!-- Main content -->
+    <div class="container mx-auto px-4 py-12 max-w-4xl">
+        <div class="text-center mb-12 fade-in">
+            <h1 class="dancing-font text-5xl md:text-6xl font-bold text-pink-600 mb-4">Dear Zoza,</h1>
+            <p class="text-xl text-gray-700">This is Omar with a special message for you...</p>
+        </div>
+        
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8 mb-16 fade-in">
+            <div class="photo-frame bg-white p-2 w-64 h-64">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                     alt="Romantic couple" class="w-full h-full object-cover">
+            </div>
+            <div class="max-w-md">
+                <p class="text-lg text-gray-700 mb-6">
+                    Every time I see you, my heart skips a beat. Your smile lights up my world, and I can't help but imagine how amazing it would be to spend more time with you.
+                </p>
+                <p class="text-lg text-gray-700">
+                    I've created this little website because I wanted to ask you something important in a special way...
+                </p>
+            </div>
+        </div>
+        
+        <div class="text-center mb-16 fade-in">
+            <h2 class="dancing-font text-4xl font-bold text-pink-600 mb-6">Will You Go On A Date With Me?</h2>
+            <div class="flex justify-center gap-6">
+                <button id="yesBtn" class="button-pulse bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-heart mr-2"></i> YES!
+                </button>
+                <button id="noBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-8 rounded-full text-xl transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-times mr-2"></i> No
+                </button>
+            </div>
+        </div>
+        
+        <!-- Date Planning Form -->
+        <div id="datePlanningForm" class="date-planning-form bg-white rounded-xl p-8 shadow-lg mb-8">
+            <h3 class="dancing-font text-3xl text-pink-600 mb-6 text-center">Let's Plan Our Perfect Date!</h3>
+            
+            <form 
+                id="dateDetailsForm" 
+                action="https://formsubmit.co/omaromran5678@gmail.com" 
+                method="POST"
+                class="space-y-6"
+            >
+                <!-- FormSubmit Configuration -->
+                <input type="hidden" name="_subject" value="New Date Request from Zoza!">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="#success">
+                <input type="text" name="_honey" style="display:none">
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Preferred Date</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <input type="date" id="date" name="Date" class="form-input w-full p-2 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <input type="time" id="time" name="Time" class="form-input w-full p-2 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <select id="duration" name="Duration" class="form-input w-full p-2 focus:outline-none" required>
+                                <option value="">Duration</option>
+                                <option value="1-2 hours">1-2 hours</option>
+                                <option value="3-4 hours">3-4 hours</option>
+                                <option value="Whole evening">Whole evening</option>
+                                <option value="All day">All day</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Type of Date</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Date Type" value="Dinner" class="form-radio text-pink-500" checked>
+                            <span>Dinner</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Date Type" value="Movie" class="form-radio text-pink-500">
+                            <span>Movie</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Date Type" value="Activity" class="form-radio text-pink-500">
+                            <span>Activity</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Date Type" value="Surprise" class="form-radio text-pink-500">
+                            <span>Surprise me!</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="dinnerOptions">
+                    <label class="block text-gray-700 font-medium mb-2">Food Preferences</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-600 mb-1">Cuisine Preference</label>
+                            <select name="Cuisine" class="form-input w-full p-2 focus:outline-none">
+                                <option value="">Any</option>
+                                <option value="Italian">Italian</option>
+                                <option value="French">French</option>
+                                <option value="Japanese">Japanese</option>
+                                <option value="Mexican">Mexican</option>
+                                <option value="Thai">Thai</option>
+                                <option value="Indian">Indian</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-600 mb-1">Dietary Restrictions</label>
+                            <select name="Dietary Restrictions" class="form-input w-full p-2 focus:outline-none">
+                                <option value="">None</option>
+                                <option value="Vegetarian">Vegetarian</option>
+                                <option value="Vegan">Vegan</option>
+                                <option value="Gluten-free">Gluten-free</option>
+                                <option value="Halal">Halal</option>
+                                <option value="Kosher">Kosher</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="activityOptions" class="hidden">
+                    <label class="block text-gray-700 font-medium mb-2">Activity Ideas</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Bowling" class="form-checkbox text-pink-500">
+                            <span>Bowling</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Mini Golf" class="form-checkbox text-pink-500">
+                            <span>Mini Golf</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Museum" class="form-checkbox text-pink-500">
+                            <span>Museum</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Art Gallery" class="form-checkbox text-pink-500">
+                            <span>Art Gallery</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Hiking" class="form-checkbox text-pink-500">
+                            <span>Hiking</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="Activities" value="Beach" class="form-checkbox text-pink-500">
+                            <span>Beach</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Dress Code</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Dress Code" value="Casual" class="form-radio text-pink-500" checked>
+                            <span>Casual</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Dress Code" value="Smart Casual" class="form-radio text-pink-500">
+                            <span>Smart Casual</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Dress Code" value="Formal" class="form-radio text-pink-500">
+                            <span>Formal</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="Dress Code" value="Theme" class="form-radio text-pink-500">
+                            <span>Theme</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="specialRequests" class="block text-gray-700 font-medium mb-2">Any Special Requests?</label>
+                    <textarea id="specialRequests" name="Special Requests" rows="3" class="form-input w-full p-2 focus:outline-none" placeholder="Allergies, favorite flowers, things you'd like to do..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="message" class="block text-gray-700 font-medium mb-2">A Message for Omar</label>
+                    <textarea id="message" name="Message" rows="2" class="form-input w-full p-2 focus:outline-none" placeholder="What are you looking forward to?"></textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" id="submitBtn" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-paper-plane mr-2"></i> Send Date Plans
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="text-center fade-in">
+            <p class="text-gray-600 mb-4">No matter what you choose, I'm happy just to know you.</p>
+            <p class="dancing-font text-2xl text-pink-500">- Omar</p>
+        </div>
+    </div>
+    
+    <!-- Success modal after form submission -->
+    <div id="successModal" class="modal hide fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center transform transition-all duration-300 scale-90">
+            <div class="text-green-500 text-6xl mb-4">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h3 class="dancing-font text-4xl font-bold text-pink-600 mb-4">Yay! I'm so happy!</h3>
+            <p class="text-gray-700 mb-6">I can't wait for our date, Zoza! I'll make sure it's something special just for you.</p>
+            <p class="text-gray-700 mb-6">I've received your date plans and will get back to you soon!</p>
+            <button id="closeSuccess" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-6 rounded-full">
+                Sounds perfect!
+            </button>
+        </div>
+    </div>
+    
+    <!-- Sad modal -->
+    <div id="sadModal" class="modal hide fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center transform transition-all duration-300 scale-90">
+            <div class="text-blue-500 text-6xl mb-4">
+                <i class="fas fa-sad-tear"></i>
+            </div>
+            <h3 class="dancing-font text-3xl font-bold text-blue-600 mb-4">That's okay...</h3>
+            <p class="text-gray-700 mb-4">I understand if you're not ready or interested. I just wanted you to know how special you are to me.</p>
+            <p class="text-gray-700 mb-6">If you change your mind, I'll be here. No pressure at all.</p>
+            <button id="closeSad" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full">
+                Thank you for understanding
+            </button>
+        </div>
+    </div>
+    
+    <!-- No button escape modal -->
+    <div id="escapeModal" class="modal hide fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center transform transition-all duration-300 scale-90">
+            <div class="text-yellow-500 text-6xl mb-4">
+                <i class="fas fa-question"></i>
+            </div>
+            <h3 class="dancing-font text-3xl font-bold text-yellow-600 mb-4">Are you sure?</h3>
+            <p class="text-gray-700 mb-4">I promise I'll make it the best date ever! Just give me one chance.</p>
+            <p class="text-gray-700 mb-6">Look how far I went to ask you properly!</p>
+            <div class="flex justify-center gap-4">
+                <button id="reallyYes" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full">
+                    Okay, YES!
+                </button>
+                <button id="reallyNo" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full">
+                    Still No
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const successModal = document.getElementById('successModal');
+            const sadModal = document.getElementById('sadModal');
+            const escapeModal = document.getElementById('escapeModal');
+            const closeSuccess = document.getElementById('closeSuccess');
+            const closeSad = document.getElementById('closeSad');
+            const reallyYes = document.getElementById('reallyYes');
+            const reallyNo = document.getElementById('reallyNo');
+            const bgMusic = document.getElementById('bgMusic');
+            const heartsContainer = document.getElementById('hearts-container');
+            const datePlanningForm = document.getElementById('datePlanningForm');
+            const dateDetailsForm = document.getElementById('dateDetailsForm');
+            const dinnerOptions = document.getElementById('dinnerOptions');
+            const activityOptions = document.getElementById('activityOptions');
+            const dateTypeRadios = document.querySelectorAll('input[name="Date Type"]');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Create floating hearts
+            function createHearts() {
+                const heart = document.createElement('div');
+                heart.innerHTML = '<i class="fas fa-heart text-pink-500 text-2xl opacity-70"></i>';
+                heart.className = 'heart';
+                
+                const startPosX = Math.random() * window.innerWidth;
+                heart.style.left = startPosX + 'px';
+                heart.style.bottom = '-50px';
+                
+                const duration = 3 + Math.random() * 7;
+                heart.style.animationDuration = duration + 's';
+                
+                heartsContainer.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+            
+            // Start creating hearts
+            setInterval(createHearts, 300);
+            
+            // Play music on first interaction
+            function enableMusic() {
+                bgMusic.volume = 0.3;
+                bgMusic.play().catch(e => console.log("Autoplay prevented"));
+                document.removeEventListener('click', enableMusic);
+            }
+            
+            document.addEventListener('click', enableMusic);
+            
+            // Button events
+            yesBtn.addEventListener('click', () => {
+                datePlanningForm.classList.add('show');
+                setTimeout(() => {
+                    datePlanningForm.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+            
+            noBtn.addEventListener('click', () => {
+                escapeModal.classList.remove('hide');
+                escapeModal.classList.add('show');
+            });
+            
+            closeSuccess.addEventListener('click', () => {
+                successModal.classList.remove('show');
+                successModal.classList.add('hide');
+            });
+            
+            closeSad.addEventListener('click', () => {
+                sadModal.classList.remove('show');
+                sadModal.classList.add('hide');
+            });
+            
+            reallyYes.addEventListener('click', () => {
+                escapeModal.classList.remove('show');
+                escapeModal.classList.add('hide');
+                datePlanningForm.classList.add('show');
+                setTimeout(() => {
+                    datePlanningForm.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+            
+            reallyNo.addEventListener('click', () => {
+                escapeModal.classList.remove('show');
+                escapeModal.classList.add('hide');
+                sadModal.classList.remove('hide');
+                sadModal.classList.add('show');
+            });
+            
+            // Make No button move around when hovered
+            noBtn.addEventListener('mouseover', () => {
+                const x = Math.random() * 80 - 40;
+                const y = Math.random() * 80 - 40;
+                noBtn.style.transform = `translate(${x}px, ${y}px)`;
+            });
+            
+            noBtn.addEventListener('mouseout', () => {
+                noBtn.style.transform = 'translate(0, 0)';
+            });
+            
+            // Handle date type selection
+            dateTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if(this.value === 'Dinner') {
+                        dinnerOptions.classList.remove('hidden');
+                        activityOptions.classList.add('hidden');
+                    } else if(this.value === 'Activity') {
+                        dinnerOptions.classList.add('hidden');
+                        activityOptions.classList.remove('hidden');
+                    } else {
+                        dinnerOptions.classList.add('hidden');
+                        activityOptions.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Handle form submission
+            dateDetailsForm.addEventListener('submit', function(e) {
+                // Only prevent default if testing locally
+                if (window.location.protocol === 'file:') {
+                    e.preventDefault();
+                    console.log("Form would submit:", Object.fromEntries(new FormData(dateDetailsForm)));
+                    alert("When hosted online, this would send to your email!\n\nTo test properly:\n1. Use Live Server in VS Code\n2. Or upload to Netlify/GitHub Pages");
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loading-spinner"></div> Sending...';
+                
+                // FormSubmit will handle the actual submission
+                // Success will be handled via the _next redirect
+            });
+            
+            // Handle hash-based success
+            if (window.location.hash === '#success') {
+                successModal.classList.remove('hide');
+                successModal.classList.add('show');
+                history.replaceState(null, null, ' '); // Clear hash without scrolling
+            }
+        });
+    </script>
+</body>
+</html>
